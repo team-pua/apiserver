@@ -6,6 +6,7 @@ go 1.16
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.11.1 // indirect
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/coreos/go-systemd/v22 v22.3.2
 	github.com/davecgh/go-spew v1.1.1

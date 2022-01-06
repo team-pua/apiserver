@@ -17,8 +17,10 @@ limitations under the License.
 package factory
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/config"
 	awsstorage "github.com/team-pua/aws-backend/storage"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apiserver/pkg/storage"
@@ -34,7 +36,15 @@ func Create(c storagebackend.ConfigForResource, newFunc func() runtime.Object) (
 	case storagebackend.StorageTypeETCD2:
 		return nil, nil, fmt.Errorf("%s is no longer a supported storage backend", c.Type)
 	case storagebackend.StorageTypeUnset, storagebackend.StorageTypeETCD3:
-		return awsstorage.NewAWSStorage(c, newFunc)
+		// Using the SDK's default configuration, loading additional config
+		// and credentials values from the environment variables, shared
+		// credentials, and shared configuration files
+		cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-west-2"))
+		if err != nil {
+			fmt.Printf("unable to load SDK config, %v", err)
+		}
+		bucket := "k8s-pua-test"
+		return awsstorage.NewAWSStorage(cfg, bucket, c, newFunc), func() {}, nil
 	default:
 		return nil, nil, fmt.Errorf("unknown storage type: %s", c.Type)
 	}
@@ -54,7 +64,7 @@ func CreateHealthCheck(c storagebackend.Config) (func() error, error) {
 
 // Dummy one
 func newAWSHealthCheck(c storagebackend.Config) (func() error, error) {
-	klog.Info("calling newAWSHealthCheck")
+	fmt.Println("calling newAWSHealthCheck")
 	return func() error {
 		return nil
 	}, nil
