@@ -19,6 +19,7 @@ package factory
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	awsstorage "github.com/team-pua/aws-backend/storage"
@@ -36,6 +37,10 @@ func Create(c storagebackend.ConfigForResource, newFunc func() runtime.Object) (
 	case storagebackend.StorageTypeETCD2:
 		return nil, nil, fmt.Errorf("%s is no longer a supported storage backend", c.Type)
 	case storagebackend.StorageTypeUnset, storagebackend.StorageTypeETCD3:
+		bucket, ok := os.LookupEnv("S3_BUCKET")
+		if !ok {
+			panic("S3_BUCKET environment variable is not set")
+		}
 		// Using the SDK's default configuration, loading additional config
 		// and credentials values from the environment variables, shared
 		// credentials, and shared configuration files
@@ -43,7 +48,7 @@ func Create(c storagebackend.ConfigForResource, newFunc func() runtime.Object) (
 		if err != nil {
 			fmt.Printf("unable to load SDK config, %v", err)
 		}
-		bucket := "k8s-pua-test"
+
 		return awsstorage.NewAWSStorage(cfg, bucket, c, newFunc), func() {}, nil
 	default:
 		return nil, nil, fmt.Errorf("unknown storage type: %s", c.Type)
