@@ -19,6 +19,7 @@ package factory
 import (
 	"fmt"
 
+	awsstorage "github.com/team-pua/aws-backend/storage"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apiserver/pkg/storage"
 	"k8s.io/apiserver/pkg/storage/storagebackend"
@@ -33,7 +34,7 @@ func Create(c storagebackend.ConfigForResource, newFunc func() runtime.Object) (
 	case storagebackend.StorageTypeETCD2:
 		return nil, nil, fmt.Errorf("%s is no longer a supported storage backend", c.Type)
 	case storagebackend.StorageTypeUnset, storagebackend.StorageTypeETCD3:
-		return newS3Storage(c, newFunc)
+		return awsstorage.NewAWSStorage(c, newFunc)
 	default:
 		return nil, nil, fmt.Errorf("unknown storage type: %s", c.Type)
 	}
@@ -45,8 +46,16 @@ func CreateHealthCheck(c storagebackend.Config) (func() error, error) {
 	case storagebackend.StorageTypeETCD2:
 		return nil, fmt.Errorf("%s is no longer a supported storage backend", c.Type)
 	case storagebackend.StorageTypeUnset, storagebackend.StorageTypeETCD3:
-		return newS3HealthCheck(c)
+		return newAWSHealthCheck(c)
 	default:
 		return nil, fmt.Errorf("unknown storage type: %s", c.Type)
 	}
+}
+
+// Dummy one
+func newAWSHealthCheck(c storagebackend.Config) (func() error, error) {
+	klog.Info("calling newAWSHealthCheck")
+	return func() error {
+		return nil
+	}, nil
 }
