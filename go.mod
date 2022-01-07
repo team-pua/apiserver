@@ -26,7 +26,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
-	github.com/team-pua/aws-backend v0.0.0-20220106044956-116ad82e0b53 // indirect
+	github.com/team-pua/aws-backend v0.0.0-20220107232243-dfaee026d547
 	go.etcd.io/etcd/api/v3 v3.5.0
 	go.etcd.io/etcd/client/pkg/v3 v3.5.0
 	go.etcd.io/etcd/client/v3 v3.5.0
