@@ -161,9 +161,9 @@ func (s *GenericAPIServer) RunPostStartHooks(stopCh <-chan struct{}) {
 		StopCh:               stopCh,
 	}
 
-	for hookName, hookEntry := range s.postStartHooks {
-		go runPostStartHook(hookName, hookEntry, context)
-	}
+	// for hookName, hookEntry := range s.postStartHooks {
+	// 	go runPostStartHook(hookName, hookEntry, context)
+	// }
 }
 
 // RunPreShutdownHooks runs the PreShutdownHooks for the server
